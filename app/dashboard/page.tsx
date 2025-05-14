@@ -1,3 +1,5 @@
+"use client"
+
 import { Leaf, Users, FilePlus, Calendar, Activity, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
@@ -7,39 +9,116 @@ import { PatientFlow } from "@/components/dashboard/PatientFlow";
 import { AppointmentsChart } from "@/components/dashboard/AppointmentsChart";
 import { SustainabilityMetrics } from "@/components/dashboard/SustainabilityMetrics";
 import { DoctorWellbeingChart } from "@/components/dashboard/DoctorWellbeingChart";
+import { useEffect, useState } from 'react';
+
+interface DashboardData {
+  stats: {
+    totalPatients: number;
+    newRegistrations: number;
+    appointmentsToday: number;
+    avgWaitTime: number;
+    waitTimeChange: number;
+    registrationChange: number;
+  };
+  patientFlow: Array<{
+    hour: number;
+    count: number;
+  }>;
+  appointments: Array<{
+    department: string;
+    count: number;
+  }>;
+  sustainability: {
+    paperSaved: number;
+    carbonReduction: number;
+    digitalAdoption: number;
+  };
+  wellbeing: Array<{
+    doctor: string;
+    workload: number;
+    stress: number;
+  }>;
+  paperUsage: Array<{
+    category: string;
+    percentage: number;
+  }>;
+  digitalAdoption: Array<{
+    category: string;
+    percentage: number;
+  }>;
+}
 
 export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardShell>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  if (!data) {
+    return (
+      <DashboardShell>
+        <div className="text-center py-8">
+          Failed to load dashboard data
+        </div>
+      </DashboardShell>
+    );
+  }
+
   return (
     <DashboardShell>
       <DashboardHeader heading="Dashboard" text="Overview of hospital operations and sustainability metrics">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Last updated: Today at 09:32 AM</span>
+          <span className="text-sm text-muted-foreground">Last updated: Today at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </DashboardHeader>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DashboardStats 
           title="Total Patients"
-          value="1,284"
-          description="+4.3% from last month"
+          value={data.stats.totalPatients.toLocaleString()}
+          description={`${data.stats.registrationChange > 0 ? '+' : ''}${data.stats.registrationChange}% from last month`}
           icon={<Users className="h-4 w-4 text-muted-foreground" />}
         />
         <DashboardStats 
           title="New Registrations"
-          value="42"
+          value={data.stats.newRegistrations.toString()}
           description="Today"
           icon={<FilePlus className="h-4 w-4 text-muted-foreground" />}
         />
         <DashboardStats 
           title="Appointments"
-          value="128"
+          value={data.stats.appointmentsToday.toString()}
           description="Scheduled for today"
           icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
         />
         <DashboardStats 
           title="Average Wait Time"
-          value="14 min"
-          description="-22% from last week"
+          value={`${data.stats.avgWaitTime} min`}
+          description={`${data.stats.waitTimeChange > 0 ? '+' : ''}${data.stats.waitTimeChange}% from last week`}
           icon={<Activity className="h-4 w-4 text-muted-foreground" />}
         />
       </div>
@@ -53,7 +132,7 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <PatientFlow />
+            <PatientFlow data={data.patientFlow} />
           </CardContent>
         </Card>
         <Card className="col-span-3">
@@ -64,7 +143,7 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AppointmentsChart />
+            <AppointmentsChart data={data.appointments} />
           </CardContent>
         </Card>
       </div>
@@ -79,7 +158,7 @@ export default function DashboardPage() {
             <Leaf className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <SustainabilityMetrics />
+            <SustainabilityMetrics data={data.sustainability} />
           </CardContent>
         </Card>
         <Card className="col-span-4">
@@ -90,7 +169,7 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DoctorWellbeingChart />
+            <DoctorWellbeingChart data={data.wellbeing} />
           </CardContent>
         </Card>
       </div>
@@ -108,38 +187,28 @@ export default function DashboardPage() {
             <div className="flex flex-col space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Total Paper Saved</span>
-                <span className="text-sm font-medium">47,392 sheets</span>
+                <span className="text-sm font-medium">{data.sustainability.paperSaved.toLocaleString()} sheets</span>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span>Patient Records</span>
-                  <span>58%</span>
+              {data.paperUsage.map((usage) => (
+                <div key={usage.category} className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span>{usage.category}</span>
+                    <span>{usage.percentage}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-secondary">
+                    <div 
+                      className="h-2 rounded-full" 
+                      style={{ 
+                        width: `${usage.percentage}%`,
+                        backgroundColor: `hsl(var(--chart-${['1','2','3'][data.paperUsage.indexOf(usage)]}))`
+                      }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-1" style={{ width: "58%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span>Administrative Forms</span>
-                  <span>32%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-2" style={{ width: "32%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span>Prescriptions</span>
-                  <span>10%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-3" style={{ width: "10%" }}></div>
-                </div>
-              </div>
+              ))}
               <div className="pt-2">
                 <p className="text-xs text-muted-foreground">
-                  Equivalent to saving approximately 5.7 trees
+                  Equivalent to saving approximately {Math.round(data.sustainability.paperSaved / 8333)} trees
                 </p>
               </div>
             </div>
@@ -155,7 +224,7 @@ export default function DashboardPage() {
               <div className="relative h-52 w-52">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <span className="text-3xl font-bold">-32%</span>
+                    <span className="text-3xl font-bold">-{data.sustainability.carbonReduction}%</span>
                     <p className="text-xs text-muted-foreground">From baseline</p>
                   </div>
                 </div>
@@ -174,14 +243,14 @@ export default function DashboardPage() {
                     r="40"
                     strokeWidth="10"
                     strokeDasharray={2 * Math.PI * 40}
-                    strokeDashoffset={2 * Math.PI * 40 * (1 - 0.32)}
+                    strokeDashoffset={2 * Math.PI * 40 * (1 - (data.sustainability.carbonReduction / 100))}
                     transform="rotate(-90 50 50)"
                   />
                 </svg>
               </div>
               <div className="text-center">
                 <p className="text-sm">Total CO₂ Reduction</p>
-                <p className="text-lg font-semibold">28.4 tons</p>
+                <p className="text-lg font-semibold">{Math.round(data.sustainability.carbonReduction * 1000)} kg</p>
               </div>
             </div>
           </CardContent>
@@ -193,42 +262,23 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Patient Registration</span>
-                  <span className="text-sm font-medium">92%</span>
+              {data.digitalAdoption.map((adoption) => (
+                <div key={adoption.category} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{adoption.category}</span>
+                    <span className="text-sm font-medium">{adoption.percentage}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-secondary">
+                    <div 
+                      className="h-2 rounded-full" 
+                      style={{ 
+                        width: `${adoption.percentage}%`,
+                        backgroundColor: `hsl(var(--chart-${['1','2','3','4'][data.digitalAdoption.indexOf(adoption)]}))`
+                      }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-1" style={{ width: "92%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">E-Prescriptions</span>
-                  <span className="text-sm font-medium">87%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-2" style={{ width: "87%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Digital Documentation</span>
-                  <span className="text-sm font-medium">76%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-3" style={{ width: "76%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Mobile Check-in</span>
-                  <span className="text-sm font-medium">64%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-secondary">
-                  <div className="h-2 rounded-full bg-chart-4" style={{ width: "64%" }}></div>
-                </div>
-              </div>
+              ))}
             </div>
           </CardContent>
         </Card>

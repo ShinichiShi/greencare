@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { AddRecordForm } from "@/components/AddRecordForm"
+
 import { Plus, FileText, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
@@ -16,15 +18,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+interface Drug {
+  name: string;
+  dosage: string;
+  sustainabilityRating?: number;
+  carbonFootprint?: number;
+}
+
 interface MedicalRecord {
   _id: string;
+  mrNo: string;
   date: string;
   patient: {
     name: string;
+    mrNo: string;
   };
   diagnoses: string[];
+  drugs: Drug[];
+  reference?: string;
   doctor: {
     name: string;
+    _id: string;
   };
   status: string;
 }
@@ -49,19 +63,20 @@ export default function RecordsPage() {
     }
   };
 
+  const formatDrugs = (drugs: Drug[]) => {
+    return drugs.map(drug => `${drug.name} (${drug.dosage})`).join(', ');
+  };
+
   return (
-    <div className="  mx-auto py-8">
+    <div className="mx-auto py-8">
       <Card>
-        <CardHeader>
+      <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Medical Records</CardTitle>
               <CardDescription>View and manage patient medical records</CardDescription>
             </div>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Record
-            </Button>
+            <AddRecordForm onSuccess={fetchRecords} />
           </div>
         </CardHeader>
         <CardContent>
@@ -74,8 +89,10 @@ export default function RecordsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Diagnosis</TableHead>
+                  <TableHead>Patient</TableHead>
+                  <TableHead>MR No.</TableHead>
+                  <TableHead>Diagnoses</TableHead>
+                  <TableHead>Drugs</TableHead>
                   <TableHead>Doctor</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -88,7 +105,11 @@ export default function RecordsPage() {
                       {format(new Date(record.date), 'PPP')}
                     </TableCell>
                     <TableCell>{record.patient.name}</TableCell>
+                    <TableCell>{record.mrNo}</TableCell>
                     <TableCell>{record.diagnoses.join(', ')}</TableCell>
+                    <TableCell>
+                      {record.drugs.length > 0 ? formatDrugs(record.drugs) : 'None'}
+                    </TableCell>
                     <TableCell>Dr. {record.doctor.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={
