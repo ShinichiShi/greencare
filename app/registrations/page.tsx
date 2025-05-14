@@ -29,7 +29,14 @@ export default function RegistrationsPage() {
 
   const fetchRegistrations = async () => {
     try {
-      const response = await fetch('/api/registrations');
+      const hospitalId = localStorage.getItem('hospitalId');
+      const response = await fetch('/api/registrations',{
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Hospital-ID': hospitalId || '', 
+      },
+      });
       const data = await response.json();
       setRegistrations(data);
     } catch (error) {

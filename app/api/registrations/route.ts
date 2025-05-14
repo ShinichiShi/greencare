@@ -2,26 +2,52 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
-export async function GET() {
+export interface Registration {
+  mrNo: string;
+  name: string;
+  gender?: string;
+  age?: number;
+  notes?: string;
+  registrationDate: Date;
+  qrCode?: string;
+  hospitalId: string;
+  waitingTime?: number;
+}
+
+// GET all registrations
+export async function GET(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("greencare");
+    const hospitalId = request.headers.get('x-hospital-id');
+    if (!hospitalId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    } 
+
+    
+    // Parse URL to get query parameters
+    const { searchParams } = new URL(request.url);
+    const dateStr = searchParams.get('date');
+    
+    let query: any = { hospitalId };
+    
+    // If date parameter is provided, filter by registrationDate
+    if (dateStr) {
+      const date = new Date(dateStr);
+      const nextDay = new Date(date);
+      nextDay.setDate(date.getDate() + 1);
+      
+      query.registrationDate = {
+        $gte: date,
+        $lt: nextDay
+      };
+    }
     
     const registrations = await db.collection("registrations")
-      .aggregate([
-        {
-          $lookup: {
-            from: "patients",
-            localField: "mrNo",
-            foreignField: "mrNo",
-            as: "patient"
-          }
-        },
-        {
-          $unwind: "$patient"
-        }
-      ]).toArray();
-
+      .find(query)
+      .sort({ registrationDate: -1 })
+      .toArray();
+    
     return NextResponse.json(registrations);
   } catch (e) {
     console.error(e);
@@ -29,35 +55,47 @@ export async function GET() {
   }
 }
 
+// POST a new registration
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const client = await clientPromise;
     const db = client.db("greencare");
+    const hospitalId = request.headers.get('x-hospital-id');
+    if (!hospitalId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    } 
+    // Generate QR code (in a real app, you'd use a proper QR code library)
+    const qrCode = `QR${Date.now().toString(36).toUpperCase()}`;
     
-    // Generate QR code string (in practice, you'd use a QR code library)
-    const qrCode = `GC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    const result = await db.collection("registrations").insertOne({
-      ...body,
+    // Create the registration record
+    const registrationData: Registration = {
+      mrNo: body.mrNo,
+      name: body.name,
+      gender: body.gender,
+      age: body.age,
+      notes: body.notes,
       registrationDate: new Date(),
       qrCode,
-      waitingTime: 0 // Initial waiting time
+      waitingTime: 0,
+      hospitalId:hospitalId,
+    };
+    
+    const registrationResult = await db.collection("registrations").insertOne(registrationData);
+    // Update patient's registrations array
+    if (body.mrNo) {
+
+      await db.collection("patients").updateOne(
+        { mrNo: body.mrNo },
+        { $push: { registrations: registrationResult.insertedId.toString() as unknown as never } }
+      );
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      _id: registrationResult.insertedId,
+      qrCode 
     });
-
-    // Update sustainability metrics
-    await db.collection("sustainability_metrics").updateOne(
-      { date: new Date().toISOString().split('T')[0] },
-      {
-        $inc: { 
-          paperSaved: 7, // Average sheets saved per digital registration
-          digitalTransactions: 1
-        }
-      },
-      { upsert: true }
-    );
-
-    return NextResponse.json(result);
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: 'Failed to create registration' }, { status: 500 });

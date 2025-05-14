@@ -5,6 +5,7 @@ export interface Patient {
   age: number;
   notes?: string;
   registrations: string[]; // IDs of registrations
+  status:string;
 }
 
 export interface Registration {

@@ -16,9 +16,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Leaf } from "lucide-react"
+import { Leaf, AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useHospital } from "@/contexts/HospitalContext"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState } from "react"
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,6 +34,10 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter()
+  const { setHospitalId, setHospitalName, setIsAuthenticated } = useHospital()
+  const [loginError, setLoginError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,10 +46,37 @@ export default function LoginPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    // Here you would handle authentication
-    router.push("/dashboard")
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    setLoginError(null)
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed')
+      }
+      
+      // Set context values
+      setHospitalId(data.hospital._id)
+      setHospitalName(data.hospital.name)
+      setIsAuthenticated(true)
+      
+      // Redirect to dashboard
+      router.push("/dashboard")
+    } catch (error: any) {
+      setLoginError(error.message || 'An error occurred during login')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -55,12 +89,21 @@ export default function LoginPage() {
               <span className="text-lg font-bold">GreenCare+</span>
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
+          <CardTitle className="text-2xl text-center">Hospital Login</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access your account
+            Enter your credentials to access your hospital dashboard
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {loginError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {loginError}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -70,7 +113,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="you@example.com" {...field} />
+                      <Input placeholder="hospital@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -89,7 +132,13 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">Sign in</Button>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign in"}
+              </Button>
             </form>
           </Form>
           <div className="relative">
@@ -101,15 +150,15 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline">Google</Button>
-            <Button variant="outline">Microsoft</Button>
+            <Button variant="outline" disabled={isLoading}>Google</Button>
+            <Button variant="outline" disabled={isLoading}>Microsoft</Button>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-center justify-between space-y-2">
           <div className="text-sm text-muted-foreground text-center">
             <span>Don&apos;t have an account? </span>
             <Link href="/auth/register" className="text-primary hover:underline">
-              Sign up
+              Register your hospital
             </Link>
           </div>
           <div className="text-sm text-muted-foreground">

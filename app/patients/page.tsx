@@ -9,15 +9,15 @@ import { PatientRegistrationForm } from "@/components/patients/PatientRegistrati
 export default function PatientsPage() {
   return (
     <DashboardShell>
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Quick Registration</h2>
+        <PatientRegistrationForm />
+      </div>
       <DashboardHeader heading="Patient Management" text="Register and manage patients in a paperless environment">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm">
             <Download className="mr-2 h-4 w-4" />
             Export
-          </Button>
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            New Patient
           </Button>
         </div>
       </DashboardHeader>
@@ -53,10 +53,6 @@ export default function PatientsPage() {
         </TabsContent>
       </Tabs>
       
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Quick Registration</h2>
-        <PatientRegistrationForm />
-      </div>
     </DashboardShell>
   );
 }

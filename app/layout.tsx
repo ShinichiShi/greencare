@@ -7,6 +7,9 @@ import Link from "next/link";
 import { ArrowRight, Leaf, Users, FileText, Heart, Calendar, LineChart, Shield } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { HospitalProvider } from "@/contexts/HospitalContext";
+import AuthHeaderButtons from "@/components/AuthHeaderButtons";
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,9 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, "bg-background antialiased")}>
+      <HospitalProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className=" flex h-16 items-center justify-around">
+        <div className="flex h-16 items-center justify-around">
           <div className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-primary" />
             <Link href="/" className="text-lg font-bold">GreenCare+</Link>
@@ -49,14 +53,15 @@ export default function RootLayout({
           </nav>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Button asChild>
-              <Link href="/auth/login">Login</Link>
-            </Button>
+            <AuthHeaderButtons />
           </div>
         </div>
       </header>
       {children}
+            <Toaster richColors position="top-right" />
         </ThemeProvider>
+      </HospitalProvider>
+
       </body>
     </html>
   );

@@ -1,11 +1,12 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient,ServerApiVersion } from 'mongodb';
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
 const uri = process.env.MONGODB_URI;
-const options = {};
+const options = { tlsAllowInvalidCertificates: true,
+  serverApi: ServerApiVersion.v1,};
 
 let client;
 let clientPromise: Promise<MongoClient>;
