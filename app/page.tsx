@@ -4,47 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import FeatureCard from "@/components/home/FeatureCard";
 import HeroSection from "@/components/home/HeroSection";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold">GreenCare+</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
-              Dashboard
-            </Link>
-            <Link href="/patients" className="text-sm font-medium hover:text-primary">
-              Patients
-            </Link>
-            <Link href="/doctors" className="text-sm font-medium hover:text-primary">
-              Doctors
-            </Link>
-            <Link href="/records" className="text-sm font-medium hover:text-primary">
-              Records
-            </Link>
-            <Link href="/sustainability" className="text-sm font-medium hover:text-primary">
-              Sustainability
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Button asChild>
-              <Link href="/auth/login">Login</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex flex-col">
       <main className="flex-1">
         <HeroSection />
-
-        <section className="container py-12 md:py-24 lg:py-32">
+        <section className=" py-12 md:py-24 lg:py-32">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-5xl">
               Sustainable Healthcare Management
@@ -89,7 +55,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container py-12 md:py-24 lg:py-32 bg-muted/50">
+        <section className="  py-12 md:py-24 lg:py-32 bg-muted/50">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-5xl">
               Aligned with Sustainable Development Goals
@@ -106,7 +72,7 @@ export default function Home() {
                 <CardDescription>Eliminate paper waste through digital systems</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-40 bg-gradient-to-br from-chart-1 to-chart-2 rounded-md flex items-center justify-center">
+                <div className="h-20 bg-gradient-to-br from-chart-1 to-chart-2 rounded-md flex items-center justify-center">
                   <span className="text-4xl font-bold text-white">95%</span>
                 </div>
               </CardContent>
@@ -120,7 +86,7 @@ export default function Home() {
                 <CardDescription>Reduce carbon emissions through efficiency</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-40 bg-gradient-to-br from-chart-2 to-chart-3 rounded-md flex items-center justify-center">
+                <div className="h-20 bg-gradient-to-br from-chart-2 to-chart-3 rounded-md flex items-center justify-center">
                   <span className="text-4xl font-bold text-white">30%</span>
                 </div>
               </CardContent>
@@ -134,7 +100,7 @@ export default function Home() {
                 <CardDescription>Improved experience and reduced wait times</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-40 bg-gradient-to-br from-chart-4 to-chart-5 rounded-md flex items-center justify-center">
+                <div className="h-20 bg-gradient-to-br from-chart-4 to-chart-5 rounded-md flex items-center justify-center">
                   <span className="text-4xl font-bold text-white">87%</span>
                 </div>
               </CardContent>
@@ -145,7 +111,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container py-12 md:py-24 lg:py-32">
+        <section className="  py-12 md:py-24 lg:py-32">
           <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
             <div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
@@ -173,7 +139,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t py-6 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
+        <div className="  flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <div className="flex items-center gap-2">
             <Leaf className="h-5 w-5 text-primary" />
             <p className="text-sm leading-loose text-center md:text-left">

@@ -24,7 +24,7 @@ export default function HeroSection() {
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-b from-background to-muted/50">
-      <div className="container px-4 md:px-6">
+      <div className="px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="flex items-center space-x-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1 text-primary">
             <span className="text-xs font-semibold">SDG 3: Good Health and Well-being</span>
@@ -55,7 +55,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-      <div className="container mt-16 grid gap-6 md:gap-8 grid-cols-2 md:grid-cols-4">
+      <div className="mt-16 grid gap-6 md:gap-8 grid-cols-2 md:grid-cols-4">
         <div className="relative group overflow-hidden rounded-lg border bg-background p-6 hover:shadow-md transition-all">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
