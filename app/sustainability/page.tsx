@@ -9,7 +9,8 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContaine
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Leaf, TrendingUp, Check } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 interface SustainabilityData {
   metrics: {
     paperSaved: number;
@@ -89,7 +90,13 @@ export default function SustainabilityPage() {
         heading="Sustainability Dashboard"
         text="Track and monitor environmental impact metrics"
       >
+        
         <div className="flex items-center gap-2">
+        <Link href="/sustainability/dashboard" passHref>
+          <Button className="hidden md:inline-flex">
+            Manage Initiatives
+          </Button>
+        </Link>
           <Badge variant="outline" className="bg-green-500/10 text-green-600 dark:text-green-400">
             <Leaf className="mr-1 h-3 w-3" />
             SDG 3 Aligned
@@ -277,8 +284,97 @@ export default function SustainabilityPage() {
           </Card>
           
           <div className="grid gap-4 md:grid-cols-2">
-            {/* Keep the existing goal visualization cards */}
-            {/* They can now use data from data.goals */}
+          <Card>
+              <CardHeader>
+                <CardTitle>Carbon Reduction Target</CardTitle>
+                <CardDescription>40 tons CO₂e by end of year</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="relative h-52 w-52">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <span className="text-3xl font-bold">82%</span>
+                        <p className="text-xs text-muted-foreground">of target achieved</p>
+                      </div>
+                    </div>
+                    <svg viewBox="0 0 100 100" className="h-full w-full">
+                      <circle
+                        className="stroke-muted fill-none"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        strokeWidth="10"
+                      />
+                      <circle
+                        className="stroke-chart-2 fill-none animate-[dash_1.5s_ease-in-out]"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        strokeWidth="10"
+                        strokeDasharray={2 * Math.PI * 40}
+                        strokeDashoffset={2 * Math.PI * 40 * (1 - 0.82)}
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Achieved 32.8 tons CO₂e reduction
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      7.2 tons remaining to reach target
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Paper Reduction Target</CardTitle>
+                <CardDescription>60,000 sheets by end of year</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="relative h-52 w-52">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <span className="text-3xl font-bold">91%</span>
+                        <p className="text-xs text-muted-foreground">of target achieved</p>
+                      </div>
+                    </div>
+                    <svg viewBox="0 0 100 100" className="h-full w-full">
+                      <circle
+                        className="stroke-muted fill-none"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        strokeWidth="10"
+                      />
+                      <circle
+                        className="stroke-chart-1 fill-none animate-[dash_1.5s_ease-in-out]"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        strokeWidth="10"
+                        strokeDasharray={2 * Math.PI * 40}
+                        strokeDashoffset={2 * Math.PI * 40 * (1 - 0.91)}
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Saved 54,892 sheets of paper
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      5,108 sheets remaining to reach target
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
         
@@ -317,7 +413,99 @@ export default function SustainabilityPage() {
             </CardContent>
           </Card>
           
-          {/* Keep the existing SDG alignment section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Sustainable Development Goals Alignment</CardTitle>
+              <CardDescription>How our initiatives support SDG 3 and other global goals</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <h3 className="font-medium">SDG 3: Good Health and Well-being</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Our digital systems improve healthcare access and quality while reducing environmental impact
+                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Improved patient outcomes</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Reduced waiting times</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Enhanced doctor wellbeing</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">SDG 12: Responsible Consumption</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Our paperless systems and sustainable procurement practices reduce waste
+                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Reduced paper consumption</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Eco-friendly medication options</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Sustainable supply chain</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">SDG 13: Climate Action</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Our energy efficiency measures and carbon reduction initiatives combat climate change
+                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Carbon footprint reduction</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Energy efficiency improvements</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Renewable energy transition</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">SDG 17: Partnerships for the Goals</h3>
+                  <p className="text-sm text-muted-foreground">
+                    We collaborate with stakeholders to maximize our sustainable impact
+                  </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Industry partnerships</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Knowledge sharing</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-sm">Global health initiatives</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </DashboardShell>
