@@ -5,28 +5,14 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("greencare");
-    
-    // Get dashboard stats
     const stats = await db.collection("dashboard_stats").findOne({});
-    
-    // Get patient flow data
     const patientFlow = await db.collection("patient_flow").find().sort({ hour: 1 }).toArray();
-    
-    // Get appointments data
     const appointments = await db.collection("appointments").aggregate([
       { $group: { _id: "$department", count: { $sum: 1 } } }
     ]).toArray();
-    
-    // Get sustainability metrics
     const sustainability = await db.collection("sustainability_metrics").findOne({});
-    
-    // Get doctor wellbeing data
     const wellbeing = await db.collection("doctor_wellbeing").find().toArray();
-    
-    // Get paper usage data
     const paperUsage = await db.collection("paper_usage").find().toArray();
-    
-    // Get digital adoption data
     const digitalAdoption = await db.collection("digital_adoption").find().toArray();
 
     return NextResponse.json({

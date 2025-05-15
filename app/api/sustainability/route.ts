@@ -9,10 +9,8 @@ export async function GET() {
     // Get metrics data
     const metrics = await db.collection("sustainability_metrics").findOne({});
     
-    // Get monthly data
     const monthlyData = await db.collection("sustainability_monthly").find().sort({ month: 1 }).toArray();
     
-    // Get departmental data
     const departmentalData = await db.collection("sustainability_departments").find().toArray();
     
     // Get goals data

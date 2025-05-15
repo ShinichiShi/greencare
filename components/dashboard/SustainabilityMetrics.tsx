@@ -123,7 +123,7 @@ export function SustainabilityMetrics({ data }: SustainabilityMetricsProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-medium">Carbon Reduction</span>
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600">
+                  <Badge className="bg-amber-500/10 text-amber-600">
                     In Progress
                   </Badge>
                 </div>

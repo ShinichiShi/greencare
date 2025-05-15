@@ -143,7 +143,7 @@ export default function RegistrationsPage() {
           <CardDescription>Register a new patient with our paperless system</CardDescription>
         </CardHeader>
         <CardContent>
-          <PatientRegistrationForm onSubmit={handleRegistration} />
+          <PatientRegistrationForm />
         </CardContent>
       </Card>
     </div>
